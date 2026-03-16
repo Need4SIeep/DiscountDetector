@@ -9,6 +9,27 @@ export const api = axios.create({
   }
 });
 
+// Add interceptor to include token in all requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Add interceptor to handle 401 responses (token expired/invalid)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Products API
 export const productsAPI = {
   getAll: (params) => api.get('/products', { params }),
@@ -31,6 +52,20 @@ export const uploadAPI = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
   }
+};
+
+// Auth API
+export const authAPI = {
+  register: (username, password) => 
+    api.post('/auth/register', { username, password }),
+  login: (username, password) => 
+    api.post('/auth/login', { username, password }),
+  verify: () => 
+    api.get('/auth/verify'),
+  me: () => 
+    api.get('/auth/me'),
+  promote: (userId) => 
+    api.post(`/auth/promote/${userId}`)
 };
 
 export default api;

@@ -63,13 +63,13 @@ function ComparisonSearch() {
     <div className="comparison-search-container">
       <div className="search-section">
         <h2>🔍 Product Price Comparison</h2>
-        <p className="subtitle">Search for a product and compare prices across your purchases</p>
+        <p className="subtitle">Search for a product and compare prices across our database</p>
         
         <form onSubmit={handleSearch} className="search-form">
           <div className="form-group">
             <input
               type="text"
-              placeholder="Product name (e.g., 'Milk', 'Shampoo')"
+              placeholder="Search by product category, brand or description..."
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               className="search-input"
@@ -86,7 +86,7 @@ function ComparisonSearch() {
       {/* Current Purchase Section */}
       {hasSearched && (
         <div className="current-purchase-section">
-          <h3>� Compare Your Current Deal</h3>
+          <h3>Compare Your Current Deal</h3>
           <div className="input-grid">
             <div className="input-group">
               <label>Price (€) *</label>
@@ -100,7 +100,7 @@ function ComparisonSearch() {
               />
             </div>
             <div className="input-group">
-              <label>Quantity (items) *</label>
+              <label>Quantity (number of items) *</label>
               <input
                 type="number"
                 placeholder="1"
@@ -114,7 +114,7 @@ function ComparisonSearch() {
               <label>Capacity (per item) *</label>
               <input
                 type="number"
-                placeholder="e.g., 1 for 1L, 0.6 for 600mL"
+                placeholder=""
                 value={currentCapacity}
                 onChange={(e) => setCurrentCapacity(e.target.value)}
                 step="0.01"

@@ -3,16 +3,21 @@ import './App.css';
 import ExcelUpload from './components/ExcelUpload';
 import ComparisonSearch from './components/ComparisonSearch';
 import ProductList from './components/ProductList';
+import Auth from './components/Auth';
 import { productsAPI } from './utils/api';
+import { useAuth } from './context/AuthContext';
 
 function App() {
+  const { isLoggedIn, isAdmin, loading } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showProductList, setShowProductList] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const handleUploadSuccess = () => {
     setRefreshTrigger(refreshTrigger + 1);
+    setImportOpen(false);
   };
 
   const handleClearAll = async () => {
@@ -29,12 +34,20 @@ function App() {
     }
   };
 
+  if (loading) {
+    return <div className="app-loading">Loading...</div>;
+  }
+
+  if (!isLoggedIn) {
+    return <Auth />;
+  }
+
   return (
     <div className="app">
       <header className="app-header">
         <div className="header-content">
           <h1>💰 Cost Tracker</h1>
-          <p className="subtitle">Find the best prices for your daily shopping</p>
+          <p className="subtitle">Find out if the deal is real</p>
         </div>
       </header>
 
@@ -46,25 +59,45 @@ function App() {
           {/* Toggle to show all products */}
           <div className="view-toggle">
             <button 
-              className={`toggle-btn ${!showProductList ? 'active' : ''}`}
-              onClick={() => setShowProductList(false)}
+              className={`toggle-btn ${!showProductList && !importOpen ? 'active' : ''}`}
+              onClick={() => {
+                setShowProductList(false);
+                setImportOpen(false);
+              }}
             >
               🔍 Price Comparison
             </button>
             <button 
               className={`toggle-btn ${showProductList ? 'active' : ''}`}
-              onClick={() => setShowProductList(true)}
+              onClick={() => {
+                setShowProductList(true);
+                setImportOpen(false);
+              }}
             >
               📋 All Products
             </button>
             <button 
-              className="toggle-btn clear-btn"
-              onClick={() => setShowClearConfirm(true)}
-              title="Delete all products from database"
+              className={`toggle-btn ${importOpen ? 'active' : ''}`}
+              onClick={() => setImportOpen(!importOpen)}
+              title="Upload Excel file with product data"
             >
-              🗑️ Clear All
+              📥 Import Data
             </button>
+            {isAdmin && importOpen && (
+              <button 
+                className="toggle-btn clear-btn"
+                onClick={() => setShowClearConfirm(true)}
+                title="Delete all products from database (Admin only)"
+              >
+                🗑️ Clear All
+              </button>
+            )}
           </div>
+
+          {/* Import Section */}
+          {importOpen && (
+            <ExcelUpload onUploadSuccess={handleUploadSuccess} />
+          )}
 
           {/* All Products List */}
           {showProductList && (
@@ -74,7 +107,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Cost Tracker © 2024 - Smart shopping made easy</p>
+        <p>Discount Detector © 2026</p>
       </footer>
 
       {/* Clear All Confirmation Modal */}
@@ -102,11 +135,9 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* Import Button - Fixed Position */}
-      <ExcelUpload onUploadSuccess={handleUploadSuccess} />
     </div>
   );
+}
 }
 
 export default App;
