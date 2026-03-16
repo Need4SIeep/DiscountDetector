@@ -16,17 +16,20 @@ export function AuthProvider({ children }) {
         try {
           const response = await authAPI.me();
           setUser(response.data.user);
+          setLoading(false);
         } catch (error) {
           // Token is invalid or expired
           setToken(null);
           setUser(null);
           localStorage.removeItem('token');
+          setLoading(false);
         }
       }, 0);
 
       return () => clearTimeout(timer);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, [token]);
 
   const login = async (username, password) => {
