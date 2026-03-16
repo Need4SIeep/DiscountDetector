@@ -1,13 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { all, run, get, clearAll } = require('../models/database');
+const { verifyToken, optionalVerifyToken } = require('../middleware/authMiddleware');
 
 // ===== SPECIFIC ROUTES FIRST (more specific patterns) =====
 
-// Clear all products - with confirmation token
-router.delete('/clear-all/confirm', async (req, res) => {
+// Clear all products - with confirmation token (ADMIN ONLY)
+router.delete('/clear-all/confirm', verifyToken, async (req, res) => {
   try {
     const { confirmToken } = req.body;
+
+    // Check if admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
 
     // Simple confirmation - in production, you might want a time-based token or stronger verification
     if (confirmToken !== 'CONFIRM_CLEAR_ALL_PRODUCTS') {
@@ -94,8 +100,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Add new product
-router.post('/', async (req, res) => {
+// Add new product (REQUIRES LOGIN)
+router.post('/', verifyToken, async (req, res) => {
   try {
     const { name, brand, price, quantity, capacity, unit, purchaseDate, notes } = req.body;
 
@@ -108,9 +114,9 @@ router.post('/', async (req, res) => {
     const pricePerCapacity = qty > 0 && cap > 0 ? price / (qty * cap) : 0;
 
     const result = await run(
-      `INSERT INTO products (name, brand, price, quantity, capacity, unit, purchaseDate, pricePerCapacity, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, brand || '', price, qty, cap, String(unit).trim(), purchaseDate, pricePerCapacity, notes || '']
+      `INSERT INTO products (name, brand, price, quantity, capacity, unit, purchaseDate, pricePerCapacity, notes, userId)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, brand || '', price, qty, cap, String(unit).trim(), purchaseDate, pricePerCapacity, notes || '', req.user.id]
     );
 
     res.status(201).json({
@@ -123,8 +129,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update product
-router.put('/:id', async (req, res) => {
+// Update product (REQUIRES LOGIN - owner or admin)
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, brand, price, quantity, capacity, unit, purchaseDate, notes } = req.body;
@@ -132,6 +138,11 @@ router.put('/:id', async (req, res) => {
     const product = await get('SELECT * FROM products WHERE id = ?', [id]);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Check ownership (owner or admin can edit)
+    if (product.userId !== req.user.id && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'You can only edit your own products' });
     }
 
     const updatedQuantity = quantity !== undefined ? parseInt(quantity) : product.quantity || 1;
@@ -163,9 +174,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete single product
-router.delete('/:id', async (req, res) => {
+// Delete single product (REQUIRES LOGIN - owner or admin)
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
+    const product = await get('SELECT * FROM products WHERE id = ?', [req.params.id]);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Check ownership (owner or admin can delete)
+    if (product.userId !== req.user.id && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'You can only delete your own products' });
+    }
+
     await run('DELETE FROM products WHERE id = ?', [req.params.id]);
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {

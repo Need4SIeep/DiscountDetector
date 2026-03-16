@@ -129,6 +129,137 @@
   border: 1px solid #f5c6cb;
 }
 
+/* Product Actions (Edit/Delete buttons) */
+.product-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.edit-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #1976D2;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  background: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #da190b;
+  transform: scale(1.1);
+}
+
+/* Edit Mode */
+.product-card.editing {
+  background: #e3f2fd;
+  border: 2px solid #2196F3;
+  grid-column: span 1;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (min-width: 600px) {
+  .edit-form .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .edit-form .form-row:first-child {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .edit-form .form-row:nth-child(2) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  .edit-form .form-row:last-of-type {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.edit-form input,
+.edit-form select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.edit-form input:focus,
+.edit-form select:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 4px rgba(33, 150, 243, 0.3);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-save {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #45a049;
+}
+
+.btn-cancel {
+  background: #9E9E9E;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #757575;
+}
+
 @media (max-width: 768px) {
   .controls {
     flex-direction: column;

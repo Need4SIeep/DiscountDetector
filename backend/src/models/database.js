@@ -81,6 +81,14 @@ const initDB = () => {
               if (!err) console.log('✓ purchaseDate updated');
             });
           }
+
+          // Add userId column if it doesn't exist (track who created products)
+          if (!columnNames.includes('userId')) {
+            console.log('🔄 Migrating: Adding userId column...');
+            database.run(`ALTER TABLE products ADD COLUMN userId INTEGER`, (err) => {
+              if (!err) console.log('✓ userId column added');
+            });
+          }
         }
       });
     });

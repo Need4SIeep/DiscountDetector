@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const XLSX = require('xlsx');
 const { run, all } = require('../models/database');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -34,8 +35,8 @@ const getColumnNames = (row) => {
   return Object.keys(row).map(k => `"${k}"`).join(', ');
 };
 
-// Parse Excel file and insert into database
-router.post('/excel', upload.single('file'), async (req, res) => {
+// Parse Excel file and insert into database (REQUIRES LOGIN)
+router.post('/excel', verifyToken, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -125,9 +126,9 @@ router.post('/excel', upload.single('file'), async (req, res) => {
         const pricePerCapacity = quantity > 0 && capacity > 0 ? price / (quantity * capacity) : 0;
 
         await run(
-          `INSERT INTO products (name, brand, price, quantity, capacity, unit, purchaseDate, pricePerCapacity, notes)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [name, brand, price, quantity, capacity, unit, purchaseDateStr, pricePerCapacity, notes]
+          `INSERT INTO products (name, brand, price, quantity, capacity, unit, purchaseDate, pricePerCapacity, notes, userId)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [name, brand, price, quantity, capacity, unit, purchaseDateStr, pricePerCapacity, notes, req.user.id]
         );
         insertedCount++;
       } catch (err) {
