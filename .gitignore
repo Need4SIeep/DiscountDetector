@@ -11,6 +11,11 @@ build/
 .vscode/
 *.log
 
+# Exception: Allow /docs folder for GitHub Pages deployment
+!docs/
+docs/**
+!docs/.gitkeep
+
 # OS Files
 Thumbs.db
 .DS_Store
