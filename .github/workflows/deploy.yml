@@ -33,6 +33,7 @@ jobs:
           npm run build
         env:
           REACT_APP_API_URL: https://web-production-7139.up.railway.app/api
+          PUBLIC_URL: /DiscountDetector
           CI: false
 
       - name: Copy build to docs folder
