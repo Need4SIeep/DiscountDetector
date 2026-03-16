@@ -23,14 +23,22 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // Initialize database
 initDB();
 
-// Routes
-app.use('/api/products', productRoutes);
-app.use('/api/upload', uploadRoutes);
+// Health check routes
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Cost Tracker API is running',
+    version: '1.0.0'
+  });
+});
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Cost Tracker API is running' });
 });
+
+// Routes
+app.use('/api/products', productRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
