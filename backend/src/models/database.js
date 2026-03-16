@@ -40,99 +40,110 @@ const getDB = () => {
 const isDBReady = () => dbReady;
 
 const initDB = () => {
-  const database = getDB();
-  
-  database.serialize(() => {
-    // Create products table with new schema
-    database.run(`
-      CREATE TABLE IF NOT EXISTS products (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        brand TEXT,
-        price REAL NOT NULL,
-        quantity INTEGER DEFAULT 1,
-        capacity REAL NOT NULL,
-        unit TEXT NOT NULL,
-        purchaseDate TEXT NOT NULL,
-        pricePerCapacity REAL,
-        notes TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `, (err) => {
-      if (err) {
-        console.log('Table already exists or creation error:', err.message);
-      }
-      
-      // Try to add new columns if they don't exist (migration)
-      database.all("PRAGMA table_info(products)", (err, columns) => {
-        if (!err && columns) {
-          const columnNames = columns.map(c => c.name);
-          
-          // Add capacity column if it doesn't exist
-          if (!columnNames.includes('capacity')) {
-            console.log('🔄 Migrating: Adding capacity column...');
-            database.run(`ALTER TABLE products ADD COLUMN capacity REAL DEFAULT 1`, (err) => {
-              if (!err) console.log('✓ capacity column added');
-            });
+  try {
+    const database = getDB();
+    
+    database.serialize(() => {
+      try {
+        // Create products table with new schema
+        database.run(`
+          CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            brand TEXT,
+            price REAL NOT NULL,
+            quantity INTEGER DEFAULT 1,
+            capacity REAL NOT NULL,
+            unit TEXT NOT NULL,
+            purchaseDate TEXT NOT NULL,
+            pricePerCapacity REAL,
+            notes TEXT,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `, (err) => {
+          if (err && err.code !== 'SQLITE_ERROR') {
+            console.error('❌ Products table error:', err.message);
           }
           
-          // Add pricePerCapacity column if it doesn't exist
-          if (!columnNames.includes('pricePerCapacity')) {
-            console.log('🔄 Migrating: Adding pricePerCapacity column...');
-            database.run(`ALTER TABLE products ADD COLUMN pricePerCapacity REAL`, (err) => {
-              if (!err) console.log('✓ pricePerCapacity column added');
+          // Try to add new columns if they don't exist (migration)
+          try {
+            database.all("PRAGMA table_info(products)", (err, columns) => {
+              if (err) {
+                console.error('❌ Could not check table columns:', err);
+                return;
+              }
+              
+              if (columns) {
+                const columnNames = columns.map(c => c.name);
+                
+                // Add capacity column if it doesn't exist
+                if (!columnNames.includes('capacity')) {
+                  console.log('🔄 Migrating: Adding capacity column...');
+                  database.run(`ALTER TABLE products ADD COLUMN capacity REAL DEFAULT 1`, (err) => {
+                    if (err && err.code !== 'SQLITE_ERROR') {
+                      console.error('❌ Error adding capacity column:', err);
+                    } else if (!err) {
+                      console.log('✓ capacity column added');
+                    }
+                  });
+                }
+                
+                // Add pricePerCapacity column if it doesn't exist
+                if (!columnNames.includes('pricePerCapacity')) {
+                  console.log('🔄 Migrating: Adding pricePerCapacity column...');
+                  database.run(`ALTER TABLE products ADD COLUMN pricePerCapacity REAL`, (err) => {
+                    if (err && err.code !== 'SQLITE_ERROR') {
+                      console.error('❌ Error adding pricePerCapacity:', err);
+                    } else if (!err) {
+                      console.log('✓ pricePerCapacity column added');
+                    }
+                  });
+                }
+                
+                // Add userId column if it doesn't exist
+                if (!columnNames.includes('userId')) {
+                  console.log('🔄 Migrating: Adding userId column...');
+                  database.run(`ALTER TABLE products ADD COLUMN userId INTEGER`, (err) => {
+                    if (err && err.code !== 'SQLITE_ERROR') {
+                      console.error('❌ Error adding userId:', err);
+                    } else if (!err) {
+                      console.log('✓ userId column added');
+                    }
+                  });
+                }
+              }
             });
-          }
-          
-          // Make purchaseDate NOT NULL if not already (data migration)
-          const purchaseDateColumn = columns.find(c => c.name === 'purchaseDate');
-          if (purchaseDateColumn && !purchaseDateColumn.notnull) {
-            console.log('🔄 Migrating: Making purchaseDate required...');
-            database.run(`
-              UPDATE products SET purchaseDate = CURRENT_DATE WHERE purchaseDate IS NULL
-            `, (err) => {
-              if (!err) console.log('✓ purchaseDate updated');
-            });
-          }
-
-          // Add userId column if it doesn't exist (track who created products)
-          if (!columnNames.includes('userId')) {
-            console.log('🔄 Migrating: Adding userId column...');
-            database.run(`ALTER TABLE products ADD COLUMN userId INTEGER`, (err) => {
-              if (!err) console.log('✓ userId column added');
-            });
-          }
-        }
-      });
-    });
-
-    // Create users table
-    database.run(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        isAdmin BOOLEAN DEFAULT 0,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `, (err) => {
-      if (err) {
-        console.log('Users table error:', err.message);
-      } else {
-        console.log('✓ Users table ready');
-        
-        // Check if default admin exists
-        database.get('SELECT * FROM users WHERE isAdmin = 1 LIMIT 1', (err, admin) => {
-          if (!admin) {
-            console.log('ℹ️  No admin user found. Create one with POST /api/auth/register');
+          } catch (e) {
+            console.error('❌ Column migration error:', e);
           }
         });
+
+        // Create users table
+        database.run(`
+          CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            isAdmin BOOLEAN DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `, (err) => {
+          if (err && err.code !== 'SQLITE_ERROR') {
+            console.error('❌ Users table error:', err.message);
+          } else {
+            console.log('✓ Users table ready');
+          }
+        });
+
+        console.log('✓ Database initialized successfully');
+      } catch (e) {
+        console.error('❌ Error during database initialization:', e);
       }
     });
-
-    console.log('Database initialized successfully');
-  });
+  } catch (e) {
+    console.error('❌ Fatal database initialization error:', e);
+  }
 };
 
 const run = (sql, params = []) => {
