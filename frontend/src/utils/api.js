@@ -22,7 +22,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Only reload if it's a 401 on a protected endpoint, not on auth endpoints (login/register)
+    if (error.response?.status === 401 && !error.config.url.includes('/auth/')) {
       localStorage.removeItem('token');
       window.location.reload();
     }
