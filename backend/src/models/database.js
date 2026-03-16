@@ -85,6 +85,30 @@ const initDB = () => {
       });
     });
 
+    // Create users table
+    database.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        isAdmin BOOLEAN DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `, (err) => {
+      if (err) {
+        console.log('Users table error:', err.message);
+      } else {
+        console.log('✓ Users table ready');
+        
+        // Check if default admin exists
+        database.get('SELECT * FROM users WHERE isAdmin = 1 LIMIT 1', (err, admin) => {
+          if (!admin) {
+            console.log('ℹ️  No admin user found. Create one with POST /api/auth/register');
+          }
+        });
+      }
+    });
+
     console.log('Database initialized successfully');
   });
 };
