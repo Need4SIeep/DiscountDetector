@@ -4,8 +4,9 @@
   "description": "Cost Tracker - Household price comparison tool",
   "main": "backend/src/index.js",
   "scripts": {
-    "start": "cd backend && node src/index.js",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "start": "npm start --prefix backend",
+    "build": "npm install --prefix backend",
+    "heroku-postbuild": "npm install --prefix backend"
   },
   "engines": {
     "node": "18.x"

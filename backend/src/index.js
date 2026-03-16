@@ -1,4 +1,10 @@
-require('dotenv').config();
+// Load environment variables from .env file if available (dev only)
+try {
+  require('dotenv').config();
+} catch (e) {
+  // dotenv not required - Railway and most hosting services set env vars directly
+}
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
