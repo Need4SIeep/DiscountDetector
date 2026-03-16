@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { uploadAPI } from '../utils/api';
 import './ExcelUpload.css';
 
 function ExcelUpload({ onUploadSuccess }) {
@@ -26,13 +26,8 @@ function ExcelUpload({ onUploadSuccess }) {
     setError('');
     setMessage('');
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const response = await axios.post('/api/upload/excel', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await uploadAPI.uploadExcel(file);
       
       // Check if there were errors
       if (response.data.inserted === 0 && response.data.errors) {

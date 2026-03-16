@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { productsAPI } from '../utils/api';
 import './ComparisonSearch.css';
 
 function ComparisonSearch() {
@@ -25,9 +25,7 @@ function ComparisonSearch() {
     setError('');
 
     try {
-      const response = await axios.get('/api/products', {
-        params: { search: searchName }
-      });
+      const response = await productsAPI.getAll({ search: searchName });
       
       // Auto-detect unit from results if available
       if (response.data.length > 0) {

@@ -15,7 +15,11 @@ export const productsAPI = {
   getById: (id) => api.get(`/products/${id}`),
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
-  delete: (id) => api.delete(`/products/${id}`)
+  delete: (id) => api.delete(`/products/${id}`),
+  clearAll: (confirmToken) => api.delete('/products/clear-all/confirm', {
+    data: { confirmToken }
+  }),
+  getStats: () => api.get('/products/stats/summary')
 };
 
 // Upload API

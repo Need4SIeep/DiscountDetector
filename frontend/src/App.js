@@ -3,7 +3,7 @@ import './App.css';
 import ExcelUpload from './components/ExcelUpload';
 import ComparisonSearch from './components/ComparisonSearch';
 import ProductList from './components/ProductList';
-import axios from 'axios';
+import { productsAPI } from './utils/api';
 
 function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -18,9 +18,7 @@ function App() {
   const handleClearAll = async () => {
     setIsClearing(true);
     try {
-      await axios.delete('http://localhost:5000/api/products/clear-all/confirm', {
-        data: { confirmToken: 'CONFIRM_CLEAR_ALL_PRODUCTS' }
-      });
+      await productsAPI.clearAll('CONFIRM_CLEAR_ALL_PRODUCTS');
       setShowClearConfirm(false);
       setRefreshTrigger(refreshTrigger + 1);
     } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { productsAPI } from '../utils/api';
 import './ProductList.css';
 
 function ProductList() {
@@ -18,12 +18,10 @@ function ProductList() {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('/api/products', {
-        params: {
-          search,
-          sortBy,
-          order: sortOrder
-        }
+      const response = await productsAPI.getAll({
+        search,
+        sortBy,
+        order: sortOrder
       });
       setProducts(response.data);
     } catch (err) {
@@ -37,7 +35,7 @@ function ProductList() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`/api/products/${id}`);
+        await productsAPI.delete(id);
         setProducts(products.filter(p => p.id !== id));
       } catch (err) {
         setError('Failed to delete product');

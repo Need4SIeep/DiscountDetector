@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { productsAPI } from '../utils/api';
 import './Stats.css';
 
 function Stats() {
@@ -13,7 +13,7 @@ function Stats() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/products/stats/summary');
+      const response = await productsAPI.getStats();
       setStats(response.data);
     } catch (err) {
       console.error('Failed to fetch statistics:', err);
