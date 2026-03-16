@@ -32,6 +32,38 @@ router.delete('/clear-all/confirm', verifyToken, async (req, res) => {
   }
 });
 
+// Delete all products by a specific user (ADMIN ONLY - for abuse prevention)
+router.delete('/user/:userId/all', verifyToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const confirmToken = req.body?.confirmToken;
+
+    // Check if admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    // Require confirmation token
+    if (confirmToken !== 'CONFIRM_DELETE_USER_PRODUCTS') {
+      return res.status(403).json({ error: 'Confirmation token required' });
+    }
+
+    // Delete all products for the user
+    const result = await run(
+      'DELETE FROM products WHERE userId = ?',
+      [userId]
+    );
+
+    res.json({ 
+      message: `All products by user ${userId} deleted successfully`,
+      deletedCount: result.changes
+    });
+  } catch (error) {
+    console.error('Error deleting user products:', error);
+    res.status(500).json({ error: 'Failed to delete user products' });
+  }
+});
+
 // Get statistics
 router.get('/stats/summary', async (req, res) => {
   try {

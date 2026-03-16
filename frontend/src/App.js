@@ -4,6 +4,7 @@ import ExcelUpload from './components/ExcelUpload';
 import ComparisonSearch from './components/ComparisonSearch';
 import ProductList from './components/ProductList';
 import Auth from './components/Auth';
+import AddProductModal from './components/AddProductModal';
 import { productsAPI } from './utils/api';
 import { useAuth } from './context/AuthContext';
 
@@ -14,6 +15,7 @@ function App() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
 
   const handleUploadSuccess = () => {
     setRefreshTrigger(refreshTrigger + 1);
@@ -76,14 +78,29 @@ function App() {
             >
               📋 All Products
             </button>
-            <button 
-              className={`toggle-btn ${importOpen ? 'active' : ''} ${isGuest ? 'disabled' : ''}`}
-              onClick={() => !isGuest && setImportOpen(!importOpen)}
-              disabled={isGuest}
-              title={isGuest ? "Guest users cannot upload data" : "Upload Excel file with product data"}
-            >
-              📥 Import Data
-            </button>
+            
+            {/* Add Product button - visible to all authenticated users except guests */}
+            {!isGuest && (
+              <button 
+                className="toggle-btn add-btn"
+                onClick={() => setShowAddProductModal(true)}
+                title="Add a single product entry"
+              >
+                ➕ Add Product
+              </button>
+            )}
+
+            {/* Import Data button - admin only */}
+            {isAdmin && (
+              <button 
+                className={`toggle-btn ${importOpen ? 'active' : ''}`}
+                onClick={() => setImportOpen(!importOpen)}
+                title="Upload Excel file with product data (Admin only)"
+              >
+                📥 Import Data
+              </button>
+            )}
+
             {isAdmin && importOpen && (
               <button 
                 className="toggle-btn clear-btn"
@@ -136,6 +153,15 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Add Product Modal */}
+      <AddProductModal 
+        isOpen={showAddProductModal}
+        onClose={() => setShowAddProductModal(false)}
+        onProductAdded={() => {
+          setRefreshTrigger(refreshTrigger + 1);
+        }}
+      />
     </div>
   );
 }
