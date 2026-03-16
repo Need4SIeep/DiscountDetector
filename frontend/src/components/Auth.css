@@ -24,7 +24,7 @@
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
@@ -33,16 +33,18 @@
   color: #555;
   font-weight: 500;
   font-size: 14px;
+  text-align: left;
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 15px;
   transition: border-color 0.3s;
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .form-group input:focus {
@@ -58,16 +60,17 @@
 .error-message {
   color: #d32f2f;
   background-color: #ffebee;
-  padding: 12px;
+  padding: 12px 14px;
   border-radius: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   font-size: 14px;
   border-left: 4px solid #d32f2f;
+  box-sizing: border-box;
 }
 
 .submit-btn {
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -76,7 +79,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 20px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .submit-btn:hover:not(:disabled) {

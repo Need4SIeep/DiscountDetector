@@ -145,7 +145,7 @@ function ComparisonSearch() {
           {/* Unit Warning */}
           {sortedResults.length > 0 && currentUnit && (
             <div className="unit-info">
-              💡 Comparing <strong>{currentUnit}</strong> products only. Found <strong>{sortedResults.length}</strong> entries in {sortedResults[0].unit}.
+              💡 Found <strong>{sortedResults.length}</strong> results.
             </div>
           )}
 
@@ -209,7 +209,8 @@ function ComparisonSearch() {
               {(() => {
                 const currentPricePerCapacity = parseFloat(currentPrice) / (parseFloat(currentQuantity) * parseFloat(currentCapacity));
                 const bestPrice = Math.min(...sortedResults.map(p => p.pricePerCapacity));
-                const isBetter = currentPricePerCapacity < bestPrice;
+                const isBetter = currentPricePerCapacity <= bestPrice;
+                const isEqual = Math.abs(currentPricePerCapacity - bestPrice) < 0.0001;
                 const percentDiff = Math.abs(((currentPricePerCapacity - bestPrice) / bestPrice) * 100);
                 const bestPriceProduct = sortedResults.find(p => p.pricePerCapacity === bestPrice);
 
@@ -221,7 +222,11 @@ function ComparisonSearch() {
                     </p>
                     {isBetter ? (
                       <p className="comparison-highlight better">
-                        ✨ Your current deal is <strong>{percentDiff.toFixed(1)}% better</strong>, get it while you can!
+                        {isEqual ? (
+                          <>✨ That's the best price we've recorded! Go for it!</>
+                        ) : (
+                          <>✨ Your current deal is <strong>{percentDiff.toFixed(1)}% better</strong>, get it while you can!</>
+                        )}
                       </p>
                     ) : (
                       <p className="comparison-highlight worse">
