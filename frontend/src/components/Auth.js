@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 function Auth() {
-  const { login, register, isLoggedIn, user, logout } = useAuth();
+  const { login, register, isLoggedIn, user, logout, loginAsGuest, isGuest } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -47,9 +47,18 @@ function Auth() {
     return (
       <div className="auth-logged-in">
         <div className="user-info">
-          <p>Logged in as: <strong>{user.username}</strong></p>
-          {user.isAdmin && <span className="admin-badge">👑 Admin</span>}
-          <button onClick={logout} className="logout-btn">Logout</button>
+          {isGuest ? (
+            <>
+              <p>👤 <strong>Guest Mode</strong> - Limited features</p>
+              <button onClick={logout} className="logout-btn">Exit Guest Mode</button>
+            </>
+          ) : (
+            <>
+              <p>Logged in as: <strong>{user.username}</strong></p>
+              {user.isAdmin && <span className="admin-badge">👑 Admin</span>}
+              <button onClick={logout} className="logout-btn">Logout</button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -111,6 +120,18 @@ function Auth() {
             {loading ? '⏳ Processing...' : (isRegistering ? 'Register' : 'Login')}
           </button>
         </form>
+
+        <div className="auth-divider">
+          <span>or</span>
+        </div>
+
+        <button 
+          type="button"
+          onClick={loginAsGuest}
+          className="guest-btn"
+        >
+          👤 Continue as Guest
+        </button>
 
         <p className="toggle-auth">
           {isRegistering ? 'Already have an account? ' : "Don't have an account? "}

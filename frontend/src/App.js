@@ -8,7 +8,7 @@ import { productsAPI } from './utils/api';
 import { useAuth } from './context/AuthContext';
 
 function App() {
-  const { isLoggedIn, isAdmin, loading } = useAuth();
+  const { isLoggedIn, isAdmin, loading, isGuest } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showProductList, setShowProductList] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -47,7 +47,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <h1>💰 Cost Tracker</h1>
-          <p className="subtitle">Find out if the deal is real</p>
+          <p className="subtitle">Find out if the deal is real!</p>
         </div>
       </header>
 
@@ -77,9 +77,10 @@ function App() {
               📋 All Products
             </button>
             <button 
-              className={`toggle-btn ${importOpen ? 'active' : ''}`}
-              onClick={() => setImportOpen(!importOpen)}
-              title="Upload Excel file with product data"
+              className={`toggle-btn ${importOpen ? 'active' : ''} ${isGuest ? 'disabled' : ''}`}
+              onClick={() => !isGuest && setImportOpen(!importOpen)}
+              disabled={isGuest}
+              title={isGuest ? "Guest users cannot upload data" : "Upload Excel file with product data"}
             >
               📥 Import Data
             </button>

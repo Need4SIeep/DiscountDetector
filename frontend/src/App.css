@@ -75,6 +75,20 @@
   border-color: transparent;
 }
 
+.toggle-btn:disabled,
+.toggle-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #ddd;
+  color: #999;
+}
+
+.toggle-btn:disabled:hover,
+.toggle-btn.disabled:hover {
+  border-color: #ddd;
+  color: #999;
+}
+
 .app-footer {
   background: #333;
   color: white;

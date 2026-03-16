@@ -6,11 +6,15 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [isGuest, setIsGuest] = useState(localStorage.getItem('isGuest') === 'true');
   const [loading, setLoading] = useState(true);
 
   // Check if token is still valid on mount
   useEffect(() => {
-    if (token) {
+    if (isGuest) {
+      // Guest mode - no token validation needed
+      setLoading(false);
+    } else if (token) {
       // Add token to API default header
       const timer = setTimeout(async () => {
         try {
@@ -30,7 +34,7 @@ export function AuthProvider({ children }) {
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, isGuest]);
 
   const login = async (username, password) => {
     try {
@@ -39,7 +43,9 @@ export function AuthProvider({ children }) {
       
       setToken(newToken);
       setUser(userData);
+      setIsGuest(false);
       localStorage.setItem('token', newToken);
+      localStorage.removeItem('isGuest');
       
       return { success: true, user: userData };
     } catch (error) {
@@ -57,7 +63,9 @@ export function AuthProvider({ children }) {
       
       setToken(newToken);
       setUser(userData);
+      setIsGuest(false);
       localStorage.setItem('token', newToken);
+      localStorage.removeItem('isGuest');
       
       return { success: true, user: userData };
     } catch (error) {
@@ -68,13 +76,23 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const loginAsGuest = () => {
+    setToken(null);
+    setUser(null);
+    setIsGuest(true);
+    localStorage.removeItem('token');
+    localStorage.setItem('isGuest', 'true');
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
+    setIsGuest(false);
     localStorage.removeItem('token');
+    localStorage.removeItem('isGuest');
   };
 
-  const isLoggedIn = !!user && !!token;
+  const isLoggedIn = (!!user && !!token) || isGuest;
   const isAdmin = user?.isAdmin || false;
 
   return (
@@ -85,9 +103,11 @@ export function AuthProvider({ children }) {
         loading, 
         login, 
         register, 
-        logout, 
+        logout,
+        loginAsGuest,
         isLoggedIn,
-        isAdmin 
+        isAdmin,
+        isGuest
       }}
     >
       {children}
