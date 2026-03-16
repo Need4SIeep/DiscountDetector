@@ -1,29 +1,43 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 const DB_PATH = path.join(__dirname, '../../data/costtracker.db');
 
 // Ensure data directory exists
-const fs = require('fs');
 const dataDir = path.join(__dirname, '../../data');
 if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+  try {
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log('✓ Data directory created at:', dataDir);
+  } catch (err) {
+    console.error('❌ Error creating data directory:', err);
+  }
 }
 
 let db;
+let dbReady = false;
 
 const getDB = () => {
   if (!db) {
     db = new sqlite3.Database(DB_PATH, (err) => {
       if (err) {
-        console.error('Error opening database', err);
+        console.error('❌ Error opening database:', err);
       } else {
-        console.log('Connected to SQLite database');
+        console.log('✓ Connected to SQLite database at:', DB_PATH);
+        dbReady = true;
       }
+    });
+    
+    // Set error handler on the database connection
+    db.on('error', (err) => {
+      console.error('❌ Database error event:', err);
     });
   }
   return db;
 };
+
+const isDBReady = () => dbReady;
 
 const initDB = () => {
   const database = getDB();
@@ -177,6 +191,7 @@ const clearAll = () => {
 module.exports = {
   initDB,
   getDB,
+  isDBReady,
   run,
   get,
   all,
