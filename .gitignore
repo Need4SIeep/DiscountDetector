@@ -1,0 +1,22 @@
+# Git Configuration
+*.node_modules/
+backend/node_modules/
+frontend/node_modules/
+backend/data/
+.env.local
+.env.*.local
+.DS_Store
+dist/
+build/
+.vscode/
+*.log
+
+# OS Files
+Thumbs.db
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

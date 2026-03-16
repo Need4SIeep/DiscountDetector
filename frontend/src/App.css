@@ -1,0 +1,231 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.subtitle {
+  margin: 8px 0 0 0;
+  opacity: 0.9;
+  font-size: 16px;
+}
+
+.app-main {
+  flex: 1;
+  padding: 30px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 30px 0;
+  padding: 0 20px;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  color: #666;
+}
+
+.toggle-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.app-footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+  font-size: 14px;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 20px 15px;
+  }
+
+  .header-content h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .app-main {
+    padding: 20px 15px;
+  }
+
+  .view-toggle {
+    margin: 20px 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Clear All Button */
+.clear-btn {
+  background: #fee !important;
+  border-color: #ff6b6b !important;
+  color: #d32f2f !important;
+}
+
+.clear-btn:hover {
+  background: #fdd !important;
+  border-color: #d32f2f !important;
+}
+
+.clear-btn.active {
+  background: #ff6b6b !important;
+  color: white !important;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #d32f2f;
+}
+
+.modal-content p {
+  margin: 0 0 20px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-danger {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-cancel {
+  background: #eee;
+  color: #333;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.btn-danger {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #d32f2f;
+}
+
+.btn-cancel:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
