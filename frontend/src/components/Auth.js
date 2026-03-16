@@ -26,20 +26,27 @@ function Auth() {
         const result = await register(username, password);
         if (!result.success) {
           setError(result.error);
+        } else {
+          // Only clear fields on successful registration
+          setUsername('');
+          setPassword('');
+          setConfirmPassword('');
         }
       } else {
         const result = await login(username, password);
         if (!result.success) {
           setError(result.error);
+        } else {
+          // Only clear fields on successful login
+          setUsername('');
+          setPassword('');
+          setConfirmPassword('');
         }
       }
     } catch (err) {
       setError('An error occurred');
     } finally {
       setLoading(false);
-      setUsername('');
-      setPassword('');
-      setConfirmPassword('');
     }
   };
 
@@ -110,7 +117,21 @@ function Auth() {
             </div>
           )}
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <div className="error-content">
+                <span>⚠️ {error}</span>
+                <button 
+                  type="button"
+                  className="error-close-btn"
+                  onClick={() => setError('')}
+                  title="Dismiss error"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
 
           <button 
             type="submit" 
