@@ -13,6 +13,16 @@ if (!fs.existsSync(dataDir)) {
   } catch (err) {
     console.error('❌ Error creating data directory:', err);
   }
+} else {
+  console.log('✓ Data directory exists at:', dataDir);
+}
+
+// Check if database file exists at startup
+if (fs.existsSync(DB_PATH)) {
+  console.log('✓ Database file found, loading existing data from:', DB_PATH);
+} else {
+  console.log('⚠️  Database file not found at:', DB_PATH);
+  console.log('   New database will be created on first access');
 }
 
 let db;
