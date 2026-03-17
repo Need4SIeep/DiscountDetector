@@ -1,0 +1,278 @@
+.admin-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #667eea;
+}
+
+.admin-header h2 {
+  color: #222;
+  font-size: 28px;
+  margin: 0 0 10px 0;
+}
+
+.admin-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.admin-restricted {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 24px;
+}
+
+.admin-error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+.admin-error .close-btn {
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.admin-error .close-btn:hover {
+  color: #b71c1c;
+}
+
+.admin-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #4caf50;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-loading,
+.admin-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+.users-table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.users-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.users-table th {
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+}
+
+.users-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.users-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.users-table tbody tr.admin-user {
+  background-color: #f0f7ff;
+}
+
+.users-table tbody tr.admin-user:hover {
+  background-color: #e8f4ff;
+}
+
+.users-table td {
+  padding: 14px 12px;
+  vertical-align: middle;
+}
+
+.user-id {
+  color: #999;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.username {
+  font-weight: 600;
+  color: #222;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 90px;
+}
+
+.badge-admin {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-user {
+  background-color: #e7f3ff;
+  color: #0066cc;
+}
+
+.created-date {
+  color: #666;
+  font-size: 13px;
+}
+
+.action-cell {
+  text-align: center;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  display: inline-block;
+  position: relative;
+  width: 50px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-switch input:disabled + .slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 24px;
+  transition: background-color 0.3s;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: #667eea;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(26px);
+}
+
+.toggle-switch:hover input:not(:disabled) + .slider {
+  background-color: #999;
+}
+
+.toggle-switch:hover input:checked:not(:disabled) + .slider {
+  background-color: #764ba2;
+}
+
+.admin-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.footer-info {
+  color: #666;
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 20px 15px;
+  }
+
+  .admin-header h2 {
+    font-size: 22px;
+  }
+
+  .users-table {
+    font-size: 12px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 10px 8px;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-width: 70px;
+  }
+}

@@ -66,7 +66,11 @@ export const authAPI = {
   me: () => 
     api.get('/auth/me'),
   promote: (userId) => 
-    api.post(`/auth/promote/${userId}`)
+    api.post(`/auth/promote/${userId}`),
+  getUsers: () =>
+    api.get('/auth/users'),
+  updateUserRole: (userId, isAdmin) =>
+    api.put(`/auth/users/${userId}/role`, { isAdmin })
 };
 
 export default api;

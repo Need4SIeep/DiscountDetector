@@ -5,6 +5,7 @@ import ComparisonSearch from './components/ComparisonSearch';
 import ProductList from './components/ProductList';
 import Auth from './components/Auth';
 import AddProductModal from './components/AddProductModal';
+import AdminDashboard from './components/AdminDashboard';
 import { productsAPI } from './utils/api';
 import { useAuth } from './context/AuthContext';
 
@@ -16,6 +17,7 @@ function App() {
   const [isClearing, setIsClearing] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const handleUploadSuccess = () => {
     setRefreshTrigger(refreshTrigger + 1);
@@ -61,10 +63,11 @@ function App() {
           {/* Toggle to show all products */}
           <div className="view-toggle">
             <button 
-              className={`toggle-btn ${!showProductList && !importOpen ? 'active' : ''}`}
+              className={`toggle-btn ${!showProductList && !importOpen && !showAdminPanel ? 'active' : ''}`}
               onClick={() => {
                 setShowProductList(false);
                 setImportOpen(false);
+                setShowAdminPanel(false);
               }}
             >
               🔍 Price Comparison
@@ -74,6 +77,7 @@ function App() {
               onClick={() => {
                 setShowProductList(true);
                 setImportOpen(false);
+                setShowAdminPanel(false);
               }}
             >
               📋 All Products
@@ -94,10 +98,29 @@ function App() {
             {isAdmin && (
               <button 
                 className={`toggle-btn ${importOpen ? 'active' : ''}`}
-                onClick={() => setImportOpen(!importOpen)}
+                onClick={() => {
+                  setImportOpen(!importOpen);
+                  setShowProductList(false);
+                  setShowAdminPanel(false);
+                }}
                 title="Upload Excel file with product data (Admin only)"
               >
                 📥 Import Data
+              </button>
+            )}
+
+            {/* Admin Dashboard button - admin only */}
+            {isAdmin && (
+              <button 
+                className={`toggle-btn admin-panel-btn ${showAdminPanel ? 'active' : ''}`}
+                onClick={() => {
+                  setShowAdminPanel(!showAdminPanel);
+                  setShowProductList(false);
+                  setImportOpen(false);
+                }}
+                title="Manage user permissions and roles"
+              >
+                🔐 User Management
               </button>
             )}
 
@@ -115,6 +138,11 @@ function App() {
           {/* Import Section */}
           {importOpen && (
             <ExcelUpload onUploadSuccess={handleUploadSuccess} />
+          )}
+
+          {/* Admin Dashboard */}
+          {showAdminPanel && (
+            <AdminDashboard />
           )}
 
           {/* All Products List */}

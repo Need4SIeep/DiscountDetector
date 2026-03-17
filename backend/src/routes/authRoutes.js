@@ -171,5 +171,79 @@ router.post('/promote/:userId', (req, res) => {
   }
 });
 
+// Get all users (admin only)
+router.get('/users', (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (!decoded.isAdmin) {
+      return res.status(403).json({ error: 'Only admins can view users' });
+    }
+
+    const db = getDB();
+    db.all(
+      'SELECT id, username, isAdmin, createdAt FROM users ORDER BY createdAt DESC',
+      [],
+      (err, users) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to fetch users' });
+        }
+        res.json({ users: users || [] });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user admin status (admin only)
+router.put('/users/:userId/role', (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (!decoded.isAdmin) {
+      return res.status(403).json({ error: 'Only admins can change roles' });
+    }
+
+    const db = getDB();
+    const { userId } = req.params;
+    const { isAdmin } = req.body;
+
+    if (typeof isAdmin !== 'boolean') {
+      return res.status(400).json({ error: 'isAdmin must be boolean' });
+    }
+
+    db.run(
+      'UPDATE users SET isAdmin = ? WHERE id = ?',
+      [isAdmin ? 1 : 0, userId],
+      function(err) {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to update user' });
+        }
+
+        if (this.changes === 0) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'User role updated' });
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
 module.exports.JWT_SECRET = JWT_SECRET;
