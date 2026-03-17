@@ -69,7 +69,7 @@ router.post('/register', async (req, res) => {
           res.status(201).json({
             message: 'User created successfully',
             token,
-            user: { id: this.lastID, username, isAdmin: false }
+            user: { id: this.lastID, username, isAdmin: Boolean(false) }
           });
         }
       );
@@ -112,8 +112,9 @@ router.post('/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid username or password' });
       }
 
+      const isAdminBool = Boolean(user.isAdmin);
       const token = jwt.sign(
-        { id: user.id, username: user.username, isAdmin: user.isAdmin },
+        { id: user.id, username: user.username, isAdmin: isAdminBool },
         JWT_SECRET,
         { expiresIn: '7d' }
       );
@@ -121,7 +122,7 @@ router.post('/login', (req, res) => {
       res.json({
         message: 'Login successful',
         token,
-        user: { id: user.id, username: user.username, isAdmin: user.isAdmin }
+        user: { id: user.id, username: user.username, isAdmin: isAdminBool }
       });
     });
   } catch (error) {
@@ -156,7 +157,7 @@ router.get('/me', (req, res) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    res.json({ user: decoded });
+    res.json({ user: { ...decoded, isAdmin: Boolean(decoded.isAdmin) } });
   } catch (error) {
     res.status(401).json({ error: 'Invalid or expired token' });
   }

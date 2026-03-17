@@ -10,7 +10,7 @@ import { productsAPI } from './utils/api';
 import { useAuth } from './context/AuthContext';
 
 function App() {
-  const { isLoggedIn, isAdmin, loading, isGuest } = useAuth();
+  const { isLoggedIn, isAdmin, loading, isGuest, user, logout } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showProductList, setShowProductList] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -50,8 +50,36 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>💰 Cost Tracker</h1>
-          <p className="subtitle">Find out if the deal is real!</p>
+          <div className="header-title">
+            <h1>💰 Cost Tracker</h1>
+            <p className="subtitle">Find out if the deal is real!</p>
+          </div>
+          <div className="header-user">
+            {isGuest ? (
+              <>
+                <span className="user-status">👤 Guest Mode</span>
+                <button 
+                  className="header-logout-btn" 
+                  onClick={() => { logout(); }}
+                >
+                  Exit Guest
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="user-status">
+                  {user?.username}
+                  {user?.isAdmin && <span className="header-admin-badge">👑 Admin</span>}
+                </span>
+                <button 
+                  className="header-logout-btn" 
+                  onClick={() => { logout(); }}
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
