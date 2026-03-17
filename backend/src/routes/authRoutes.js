@@ -9,21 +9,34 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 // Register a new user
 router.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password required' });
     }
 
+    // Normalize username to lowercase for consistency
+    username = username.toLowerCase().trim();
+
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
+    // Validate username format
+    if (username.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters' });
+    }
+
+    if (!/^[a-z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ error: 'Username can only contain letters, numbers, underscores, and hyphens' });
+    }
+
     const db = getDB();
 
-    // Check if user exists
-    db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
+    // Check if user exists (case-insensitive)
+    db.get('SELECT * FROM users WHERE LOWER(username) = ?', [username], async (err, user) => {
       if (err) {
+        console.error('Database error checking username:', err);
         return res.status(500).json({ error: 'Database error' });
       }
 
@@ -40,6 +53,10 @@ router.post('/register', async (req, res) => {
         [username, hashedPassword, false],
         function(err) {
           if (err) {
+            if (err.message.includes('UNIQUE constraint failed')) {
+              return res.status(400).json({ error: 'Username already exists' });
+            }
+            console.error('Error creating user:', err);
             return res.status(500).json({ error: 'Failed to create user' });
           }
 
@@ -58,6 +75,7 @@ router.post('/register', async (req, res) => {
       );
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -65,20 +83,26 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', (req, res) => {
   try {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password required' });
     }
 
+    // Normalize username to lowercase for lookup
+    username = username.toLowerCase().trim();
+
     const db = getDB();
 
-    db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
+    // Find user by username (case-insensitive)
+    db.get('SELECT * FROM users WHERE LOWER(username) = ?', [username], async (err, user) => {
       if (err) {
+        console.error('Database error during login:', err);
         return res.status(500).json({ error: 'Database error' });
       }
 
       if (!user) {
+        // Don't reveal whether username exists or not (security best practice)
         return res.status(401).json({ error: 'Invalid username or password' });
       }
 
@@ -101,6 +125,7 @@ router.post('/login', (req, res) => {
       });
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });

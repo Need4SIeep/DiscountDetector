@@ -61,8 +61,10 @@ function Auth() {
             </>
           ) : (
             <>
-              <p>Logged in as: <strong>{user.username}</strong></p>
-              {user.isAdmin && <span className="admin-badge">👑 Admin</span>}
+              <p>
+                Logged in as: <strong>{user.username}</strong>
+                {user.isAdmin && <span className="admin-badge">👑 Admin</span>}
+              </p>
               <button onClick={logout} className="logout-btn">Logout</button>
             </>
           )}
@@ -86,7 +88,13 @@ function Auth() {
               placeholder="Enter username"
               required
               disabled={loading}
+              autoComplete="username"
             />
+            {isRegistering && (
+              <div className="field-hint">
+                3+ characters, letters/numbers/- only (case-insensitive)
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -99,6 +107,7 @@ function Auth() {
               required
               disabled={loading}
               minLength="6"
+              autoComplete={isRegistering ? "new-password" : "current-password"}
             />
           </div>
 
@@ -113,6 +122,7 @@ function Auth() {
                 required
                 disabled={loading}
                 minLength="6"
+                autoComplete="new-password"
               />
             </div>
           )}
