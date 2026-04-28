@@ -36,7 +36,7 @@ jobs:
           npm install
           npm run build
         env:
-          REACT_APP_API_URL: https://web-production-7139.up.railway.app/api
+          REACT_APP_API_URL: https://discountdetector.onrender.com/api
           PUBLIC_URL: /DiscountDetector
           CI: false
 
