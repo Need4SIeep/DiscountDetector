@@ -11,8 +11,9 @@ const bodyParser = require('body-parser');
 const productRoutes = require('./routes/productRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require('./routes/authRoutes');
-const { initDB, getDB } = require('./models/database');
 const { initDB, getDB, all } = require('./models/database');
+const { verifyToken, requireAdmin } = require('./middleware/authMiddleware');
+const schemaExplorer = require('./services/schemaExplorer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,7 +43,7 @@ app.use('/api/upload', uploadRoutes);
 
 const { requireAdmin } = require('./middleware/auth');
 
-app.get('/api/debug/full', requireAdmin, async (req, res) => {
+app.get('/api/debug/full', verifyToken, requireAdmin, async (req, res) => {
   try {
     const db = getDB();
 
@@ -65,6 +66,43 @@ app.get('/api/debug/full', requireAdmin, async (req, res) => {
   }
 
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/schema/tables', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const tables = await schemaExplorer.getTables();
+    res.json(tables);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/schema/:table', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const { table } = req.params;
+
+    const columns = await schemaExplorer.getColumns(table);
+    const rowCount = await schemaExplorer.getRowCount(table);
+    const sample = await schemaExplorer.getSampleRows(table);
+
+    res.json({
+      table,
+      rowCount,
+      columns,
+      sample
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/schema/full', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const schema = await schemaExplorer.getFullSchema();
+    res.json(schema);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
