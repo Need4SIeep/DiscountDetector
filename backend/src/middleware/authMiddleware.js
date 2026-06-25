@@ -33,4 +33,20 @@ const optionalVerifyToken = (req, res, next) => {
   }
 };
 
-module.exports = { verifyToken, optionalVerifyToken };
+const requireAdmin = (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ error: 'Admin only' });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ error: 'Authorization error' });
+  }
+};
+
+module.exports = { verifyToken, optionalVerifyToken, requireAdmin };

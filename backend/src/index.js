@@ -12,6 +12,7 @@ const productRoutes = require('./routes/productRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const authRoutes = require('./routes/authRoutes');
 const { initDB, getDB } = require('./models/database');
+const { initDB, getDB, all } = require('./models/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,6 +39,36 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
+
+const { requireAdmin } = require('./middleware/auth');
+
+app.get('/api/debug/full', requireAdmin, async (req, res) => {
+  try {
+    const db = getDB();
+
+    const tables = await new Promise((resolve, reject) => {
+      db.all(`
+        SELECT name FROM sqlite_master WHERE type='table'
+      `, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    const result = {};
+
+   for (const t of tables) {
+    if (!t.name) continue;
+
+    const rows = await all(`SELECT * FROM "${t.name}" LIMIT 5`);
+    result[t.name] = rows;
+  }
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Error handling middleware (catch all errors)
 app.use((err, req, res, next) => {
