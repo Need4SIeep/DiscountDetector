@@ -41,8 +41,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
 
-const { requireAdmin } = require('./middleware/auth');
-
 app.get('/api/debug/full', verifyToken, requireAdmin, async (req, res) => {
   try {
     const db = getDB();
