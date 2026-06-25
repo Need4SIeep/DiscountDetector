@@ -43,8 +43,6 @@ app.use('/api/upload', uploadRoutes);
 
 app.get('/api/debug/full', verifyToken, requireAdmin, async (req, res) => {
   try {
-    const db = getDB();
-
     const tables = await new Promise((resolve, reject) => {
       db.all(`
         SELECT name FROM sqlite_master WHERE type='table'
@@ -54,13 +52,15 @@ app.get('/api/debug/full', verifyToken, requireAdmin, async (req, res) => {
       });
     });
 
-    const result = {};
+  for (const t of tables) {
+    if (!t?.name || typeof t.name !== 'string') continue;
 
-   for (const t of tables) {
-    if (!t.name) continue;
-
-    const rows = await all(`SELECT * FROM "${t.name}" LIMIT 5`);
-    result[t.name] = rows;
+    try {
+      const rows = await all(`SELECT * FROM "${t.name}" LIMIT 5`);
+      result[t.name] = rows;
+    } catch (err) {
+      result[t.name] = { error: err.message };
+    }
   }
 
     res.json(result);
