@@ -50,6 +50,8 @@ app.get('/api/debug/full', verifyToken, requireAdmin, async (req, res) => {
         if (err) reject(err);
         else resolve(rows);
       });
+      console.log("SCHEMA HIT:", req.params);
+      console.log("USER:", req.user);
     });
 
   for (const t of tables) {
@@ -76,6 +78,8 @@ app.get('/api/schema/tables', verifyToken, requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  console.log("SCHEMA HIT:", req.params);
+  console.log("USER:", req.user);
 });
 
 app.get('/api/schema/:table', verifyToken, requireAdmin, async (req, res) => {
@@ -95,6 +99,8 @@ app.get('/api/schema/:table', verifyToken, requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  console.log("SCHEMA HIT:", req.params);
+  console.log("USER:", req.user);
 });
 
 app.get('/api/schema/full', verifyToken, requireAdmin, async (req, res) => {
@@ -104,6 +110,8 @@ app.get('/api/schema/full', verifyToken, requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  console.log("SCHEMA HIT:", req.params);
+  console.log("USER:", req.user);
 });
 
 // Error handling middleware (catch all errors)
